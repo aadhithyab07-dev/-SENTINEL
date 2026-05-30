@@ -12,7 +12,7 @@ export default function Forensics() {
     setLoading(true);
     setMessage("");
     try {
-      const res = await fetch("http://localhost:5001/forensics/baseline", {
+      const res = await fetch("http://https://sentinel-v2tk.onrender.com/forensics/baseline", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path })
@@ -28,7 +28,7 @@ export default function Forensics() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("http://localhost:5001/forensics/scan", {
+      const res = await fetch("http://https://sentinel-v2tk.onrender.com/forensics/scan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path })

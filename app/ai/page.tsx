@@ -15,7 +15,7 @@ export default function AIDetector() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("http://localhost:5003/ai/simulate");
+      const res = await fetch("http://https://sentinel-v2tk.onrender.com/ai/simulate");
       const data = await res.json();
       setResult(data);
     } catch { alert("Cannot connect to AI server!"); }
@@ -26,7 +26,7 @@ export default function AIDetector() {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("http://localhost:5003/ai/analyze", {
+      const res = await fetch("http://https://sentinel-v2tk.onrender.com/ai/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(custom)
