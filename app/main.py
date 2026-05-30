@@ -10,7 +10,7 @@ import random
 import time
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins="*", allow_headers="*", methods=["GET", "POST", "OPTIONS"])
 
 # ── NETWORK SCANNER ──────────────────────────────────────
 @app.route('/scan', methods=['GET'])
