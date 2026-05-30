@@ -1,40 +1,30 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import socket
-import struct
-import threading
 import requests
 import hashlib
 import os
 import random
-import time
 
 app = Flask(__name__)
 CORS(app, origins="*", allow_headers="*", methods=["GET", "POST", "OPTIONS"])
 
-# ── NETWORK SCANNER ──────────────────────────────────────
-@app.route('/scan', methods=['GET'])
-def scan_network():
+@app.route('/', methods=['GET'])
+def health():
+    return jsonify({'status': 'SENTINEL Backend Running!', 'version': '1.0'})
+
+@app.route('/osint/ip/<ip>', methods=['GET'])
+def lookup_ip(ip):
     try:
-        import nmap
-        def get_local_ip():
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            s.connect(("8.8.8.8", 80))
-            ip = s.getsockname()[0]
-            s.close()
-            return ip
-        local_ip = get_local_ip()
-        network = local_ip.rsplit('.', 1)[0] + '.0/24'
-        nm = nmap.PortScanner()
-        nm.scan(hosts=network, arguments='-sn')
-        devices = []
-        for host in nm.all_hosts():
-            devices.append({'ip': host, 'status': nm[host].state(), 'hostname': nm[host].hostname()})
-        return jsonify({'network': network, 'devices': devices})
+        res = requests.get(f'http://ip-api.com/json/{ip}', timeout=5)
+        data = res.json()
+        return jsonify({'ip': ip, 'country': data.get('country', 'Unknown'),
+                        'city': data.get('city', 'Unknown'), 'isp': data.get('isp', 'Unknown'),
+                        'org': data.get('org', 'Unknown'), 'region': data.get('regionName', 'Unknown'),
+                        'status': data.get('status', 'Unknown')})
     except Exception as e:
         return jsonify({'error': str(e)})
 
-# ── FORENSICS ────────────────────────────────────────────
 baseline = {}
 
 def get_file_hash(filepath):
@@ -77,20 +67,6 @@ def detect_changes():
     return jsonify({'new_files': new_files[:20], 'modified': modified[:20], 'deleted': deleted[:20],
                     'total_new': len(new_files), 'total_modified': len(modified), 'total_deleted': len(deleted)})
 
-# ── OSINT ────────────────────────────────────────────────
-@app.route('/osint/ip/<ip>', methods=['GET'])
-def lookup_ip(ip):
-    try:
-        res = requests.get(f'http://ip-api.com/json/{ip}', timeout=5)
-        data = res.json()
-        return jsonify({'ip': ip, 'country': data.get('country', 'Unknown'),
-                        'city': data.get('city', 'Unknown'), 'isp': data.get('isp', 'Unknown'),
-                        'org': data.get('org', 'Unknown'), 'region': data.get('regionName', 'Unknown'),
-                        'status': data.get('status', 'Unknown')})
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-# ── AI DETECTOR ──────────────────────────────────────────
 def analyze_traffic(data):
     alerts = []
     risk_score = 0
@@ -132,10 +108,6 @@ def simulate():
     result = analyze_traffic(scenario)
     result['input'] = scenario
     return jsonify(result)
-
-@app.route('/', methods=['GET'])
-def health():
-    return jsonify({'status': 'SENTINEL Backend Running!', 'version': '1.0'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))
