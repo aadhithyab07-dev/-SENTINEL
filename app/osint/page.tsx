@@ -13,7 +13,7 @@ export default function OSINT() {
     setResult(null);
     setError("");
     try {
-      const res = await fetch(`http://https://sentinel-v2tk.onrender.com/osint/ip/${ip}`);
+      const res = await fetch(`https://sentinel-v2tk.onrender.com/ip/${ip}`);
       const data = await res.json();
       if (data.error) setError(data.error);
       else setResult(data);
