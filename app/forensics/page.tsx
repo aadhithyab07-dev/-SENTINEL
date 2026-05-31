@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 export default function Forensics() {
-  const [path, setPath] = useState("C:\\Users\\jayanthi\\Desktop");
+  const [path, setPath] = useState("");
   const [baseline, setBaseline] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
