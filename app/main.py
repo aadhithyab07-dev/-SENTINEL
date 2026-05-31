@@ -7,7 +7,13 @@ import os
 import random
 
 app = Flask(__name__)
-CORS(app, origins="*", allow_headers="*", methods=["GET", "POST", "OPTIONS"])
+CORS(app)
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    return response
 
 @app.route('/', methods=['GET'])
 def health():
